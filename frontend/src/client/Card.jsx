@@ -1,5 +1,5 @@
 import axios from 'axios'
-import '../App.css'
+
 import React, { useContext, useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import UserContext from '../context/Usercontext'
@@ -29,11 +29,11 @@ export default function Card() {
   let {setCart} = useContext(UserContext)
 
   async function printCartNumber(){
-    let result = await axios.get('http://localhost:3000/cartdata')
+    let result = await axios.get('http://localhost:3000/api/getCart')
     // setUser(response.data)
     setCart(result.data.length)
   }
-  // printCartNumber()
+  printCartNumber()///?
 
   
   function All(){
@@ -41,51 +41,52 @@ export default function Card() {
   }
  
   async function onetothree(){
-    let response = await axios.get('http://localhost:3000/getdata')
-
-   let result = response.data.filter((item)=>item.product_price>=1000 && item.product_price<=3000)
+    let response = await axios.get('http://localhost:3000/api/products')
+   let result = response.data.filter((item)=>item.productPrice>=1000 && item.productPrice<=3000)
     setUser(result)
     
   }
  async function threetofive(){
-  let response = await axios.get('http://localhost:3000/getdata')
+  let response = await axios.get('http://localhost:3000/api/products')
   
-   let result = response.data.filter((item)=>item.product_price>3000 && item.product_price<=5000)
+   let result = response.data.filter((item)=>item.productPrice>3000 && item.productPrice<=5000)
     setUser(result)
     
   }
   async function fivetoseven(){
-    let response = await axios.get('http://localhost:3000/getdata')
+    let response = await axios.get('http://localhost:3000/api/products')
 
-   let result = response.data.filter((item)=>item.product_price>5000 && item.product_price<=7000)
-    setUser(result)
+   let result = response.data.filter((item)=>item.productPrice>5000 && item.productPrice<=7000)
+   let final = result ? result : response.data
+   setUser(final)
     
   }
   async function aboveseven(){
-    let response = await axios.get('http://localhost:3000/getdata')
+    let response = await axios.get('http://localhost:3000/api/products')
 
-   let result = response.data.filter((item)=>item.product_price>7000)
+   let result = await response.data.filter((item)=>item.productPrice>7000)
+   let final = result ? response.data : result
+    setUser(final)
+    
+  }
+ async function Shirt(){
+  let response = await axios.get('http://localhost:3000/api/products')
+
+   let result = response.data.filter((item)=>item.productType=='shirt')
     setUser(result)
     
   }
- async function adidas(){
-    let response = await axios.get('http://localhost:3000/getdata')
+ async function jeans(){
+  let response = await axios.get('http://localhost:3000/api/products')
 
-   let result = response.data.filter((item)=>item.product_name=='adidas')
+   let result = response.data.filter((item)=>item.productType=='jeans')
     setUser(result)
     
   }
- async function denim(){
-    let response = await axios.get('http://localhost:3000/getdata')
+ async function watch(){
+  let response = await axios.get('http://localhost:3000/api/products')
 
-   let result = response.data.filter((item)=>item.product_name=='denim')
-    setUser(result)
-    
-  }
- async function puma(){
-    let response = await axios.get('http://localhost:3000/getdata')
-
-   let result = response.data.filter((item)=>item.product_name=='puma')
+   let result = response.data.filter((item)=>item.productType=='watch')
     setUser(result)
     
   }
@@ -99,14 +100,15 @@ export default function Card() {
 
   const addcart = async(user)=>{
     try{
-    const response = await axios.post('http://localhost:3000/submitCart',{
-      product_name:user.product_name,
-      product_type:user.product_type,
-      product_rating:user.product_rating,
-      product_price:user.product_price
+    const response = await axios.post('http://localhost:3000/api/saveCart',{
+      productBrand:user.productBrand,
+      productType:user.productType,
+      productRating:user.productRating,
+      productPrice:user.productPrice,
+      productImage:user.productImage
     });
     console.log('Product added to mysql' , response.data)
-    let result = await axios.get('http://localhost:3000/cartdata')
+    let result = await axios.get('http://localhost:3000/api/getCart')
     // setUser(response.data)
     setCart(result.data.length)
  
@@ -124,13 +126,11 @@ export default function Card() {
         <aside className="flex h-screen w-64 flex-col overflow-y-auto border-r bg-black px-5 py-8">
           
           <div className="mt-6 flex flex-1 flex-col justify-between" id='sidebar-local'>
-            <nav className="-mx-3 space-y-6 ">
+            <nav className="-mx-3  ">
               <div className="space-y-3 ">
-                <label className="px-3 text-xs font-semibold uppercase text-white">analytics</label>
-                
-                
+      
 <form className="max-w-md mx-auto">   
-    <label htmlFor="default-search" className="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">Search</label>
+    <label htmlFor="default-search" className=" text-sm font-medium text-gray-900 sr-only dark:text-white">Search</label>
     <div className="relative">
         <div className="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
             <svg className="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
@@ -154,21 +154,16 @@ export default function Card() {
                 >
                   <span className="mx-2 text-sm font-medium">search</span>
                 </button>
-                <a
-                  className="flex transform items-center rounded-lg px-3 py-2 text-gray-200 transition-colors duration-300 hover:bg-gray-100 hover:text-gray-700"
-                  href="#"
-                >
-                  <span className="mx-2 text-sm font-medium">Sales</span>
-                </a>
-              </div>
-              <div className="space-y-3 ">
-                <label className="px-3 text-xs font-semibold uppercase text-white">Price</label>
                 <button
                   className="flex transform items-center rounded-lg px-3 py-2 text-gray-200 transition-colors duration-300 hover:bg-gray-100 hover:text-gray-700"
                  onClick={All}
                 >
                   <span className="mx-2 text-sm font-medium">All</span>
                 </button>
+              </div>
+              <div className="space-y-3 ">
+                <label className="px-3 text-xs font-semibold uppercase text-white">Price</label>
+                
                 <button
                 onClick={onetothree}
                   className="flex transform items-center rounded-lg px-3 py-2 text-gray-200 transition-colors duration-300 hover:bg-gray-100 hover:text-gray-700"
@@ -197,26 +192,26 @@ export default function Card() {
               </div>
 
               <div className="space-y-3 ">
-                <label className="px-3 text-xs font-semibold uppercase text-white">Brands</label>
+                <label className="px-3 text-xs font-semibold uppercase text-white">Type</label>
                 <button
                   className="flex transform items-center rounded-lg px-3 py-2 text-gray-200 transition-colors duration-300 hover:bg-gray-100 hover:text-gray-700"
-                  onClick={adidas}
+                  onClick={Shirt}
                 >
-                  <span className="mx-2 text-sm font-medium">Adidas</span>
+                  <span className="mx-2 text-sm font-medium">Shirt</span>
                 </button>
                 <button
-                onClick={denim}
+                onClick={jeans}
                   className="flex transform items-center rounded-lg px-3 py-2 text-gray-200 transition-colors duration-300 hover:bg-gray-100 hover:text-gray-700"
                   href="#"
                 >
-                  <span className="mx-2 text-sm font-medium">Denim</span>
+                  <span className="mx-2 text-sm font-medium">Jeans</span>
                 </button>
                 <button
-                onClick={puma}
+                onClick={watch}
                   className="flex transform items-center rounded-lg px-3 py-2 text-gray-200 transition-colors duration-300 hover:bg-gray-100 hover:text-gray-700"
                   href="#"
                 >
-                  <span className="mx-2 text-sm font-medium">Puma</span>
+                  <span className="mx-2 text-sm font-medium">Watch</span>
                 </button>
 
                 
@@ -230,41 +225,27 @@ export default function Card() {
       {/* Card */}
       <div id='card'>
         {user.map((data, key) => (
-          <div className="flex max-w-2xl flex-col items-center rounded-md border md:flex-row" id='main' key={key}>
-            <div className="h-full w-full md:h-[200px] md:w-[300px]">
-              <img
-                src={`http://localhost:3000/${data.productImage}`}
-                alt="Laptop"
-                className="h-full w-full rounded-md object-cover"
-              />
-            </div>
-            <div>
-              <div className="p-4">
-                
-                <div >
-                <h1 className="inline-flex items-center text-lg font-semibold" id='card_div_p'>
-                  Product Brand:-{data.productBrand}
-                </h1>
-                <h1 className="inline-flex items-center text-lg font-semibold" id='card_div_p'>
-                  Product Type:-{data.productType}
-                </h1>
-                <h1 className="inline-flex items-center text-lg font-semibold" id='card_div_p'>
-                  Product Rating:-{data.productRating}
-                </h1>
-                <h1 className="inline-flex items-center text-lg font-semibold" id='card_div_p'>
-                  Product Price:-{data.productPrice}
-                </h1>
-                </div>
-                <div className="mt-3 flex items-center space-x-2">
-              <button type='submit'
-              onClick={()=>addcart(data)}
-              
-              id='button-card'>Add to cart</button>
-
-                </div>
-              </div>
-            </div>
-          </div>
+           <div className="w-[300px] rounded-md border-4">
+           <img
+             src={`http://localhost:3000/${data.productImage}`}
+             className="h-[200px] w-full rounded-md object-cover"
+           />
+           <div className="p-4">
+             <h1 className="text-lg font-semibold">Product Brand:- <span className='text-2xl font-bold'>{data.productBrand}</span></h1>
+             <h1 className="text-lg font-semibold">Product Type:- <span className='text-2xl font-bold'>{data.productType}</span></h1>
+             <h1 className="text-lg font-semibold">Product Price:- <span className='text-2xl font-bold'>{data.productPrice}</span></h1>
+             <h1 className="text-lg font-semibold">Product Rating:- <span className='text-2xl font-bold'>{data.productRating}</span></h1>
+             
+             <button
+               type="button"
+               onClick={()=>addcart(data)}
+               className="mt-4 rounded bg-black px-2.5 py-1 text-[13px] font-semibold text-white shadow-sm hover:bg-black/80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black"
+             >
+               Add to Cart
+             </button>
+           </div>
+         </div>
+        
         ))}
       </div>
     </>

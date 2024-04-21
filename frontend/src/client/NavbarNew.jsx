@@ -9,19 +9,19 @@ import UserContext from '../context/Usercontext'
 const menuItems = [
   {
     name: 'Home',
-    href: '#',
+    to: '',
   },
   {
     name: 'About',
-    href: '#',
+    to: '',
   },
   {
     name: 'Contact',
-    href: '#',
+    to: '',
   },
 ]
 
-export default function NavbarNew({size}) {
+export default function NavbarNew() {
   const [isMenuOpen, setIsMenuOpen] = React.useState(false)
 
   const toggleMenu = () => {
@@ -37,21 +37,19 @@ console.log(cart)
         <div className="relative w-full bg-white">
           <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-2 sm:px-6 lg:px-8">
             <div className="inline-flex items-center space-x-2">
-
+            Navbar
             </div>
             <div className="hidden grow items-start lg:flex">
               <ul className="ml-12 inline-flex space-x-8">
                 {menuItems.map((item) => (
                   <li key={item.name}>
-                    <a
-                      href={item.href}
+                    <Link
+                      to={item.to}
                       className="inline-flex items-center text-sm font-semibold text-gray-800 hover:text-gray-900"
                     >
                       {item.name}
-                      <span>
-                        <ChevronDown className="ml-2 h-4 w-4" />
-                      </span>
-                    </a>
+                     
+                    </Link>
                   </li>
                 ))}
               </ul>
@@ -59,11 +57,27 @@ console.log(cart)
             <div className="hidden space-x-2 lg:block">
               <Link
                 type="button"
+                to='/user/signin'
+                // onClick={handleclick}
+                className="rounded-md border  bg-gray-400 border-black px-3 py-2 text-sm font-semibold text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black"
+              >
+                Sign In
+              </Link>
+              <Link
+                type="button"
+                to='/user/signup'
+                // onClick={handleclick}
+                className="rounded-md border bg-gray-400 border-black px-3 py-2 text-sm font-semibold text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black"
+              >
+                Sign Up
+              </Link>
+              <Link
+                type="button"
                 to='/cart'
                 // onClick={handleclick}
-                className="rounded-md border border-black px-3 py-2 text-sm font-semibold text-black shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black"
+                className="rounded-md relative  border border-black px-3 py-2 text-sm font-semibold text-black shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black"
               >
-                Cart {cart}
+                Cart <span className={`${cart ? 'absolute w-[20px] h-[20px] bg-red-400 top-[-6px] right-[-8px] text-[15px] flex justify-center items-center rounded ' : 'none'}`}>{`${cart ? cart : ''}`}</span>
               </Link>
               {/* <span>{size}</span> */}
             </div>
